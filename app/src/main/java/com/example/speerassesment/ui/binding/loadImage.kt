@@ -7,6 +7,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.example.speerassesment.R
 
+//achieving glide call in cml with data binding
 @BindingAdapter("app:loadImage")
 fun ImageView.loadImage(url: String) {
     this.post {

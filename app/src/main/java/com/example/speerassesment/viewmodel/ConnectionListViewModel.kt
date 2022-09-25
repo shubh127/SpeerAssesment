@@ -17,10 +17,12 @@ class ConnectionListViewModel @Inject constructor(private val repository: UserRe
     private val userName = state.getLiveData(USERNAME, "")
     private var isFollowing = false
 
+    //api call
     val connectionsResponse = userName.switchMap { queryString ->
         repository.getConnectionList(queryString, isFollowing).cachedIn(viewModelScope)
     }
 
+    //data setter via view
     fun getData(query: String, isFollowing: Boolean) {
         userName.value = query
         this.isFollowing = isFollowing

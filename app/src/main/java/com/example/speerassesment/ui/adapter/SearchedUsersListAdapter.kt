@@ -9,7 +9,7 @@ import com.example.speerassesment.databinding.ItemSearchedUserBinding
 import com.example.speerassesment.listener.UserProfileClickListener
 import com.example.speerassesment.ui.viewholder.SearchedUserViewHolder
 
-
+//adapter for users list (searched, followers, followings)
 class SearchedUsersListAdapter(private val clickListener: UserProfileClickListener) :
     PagingDataAdapter<User, SearchedUserViewHolder>(SEARCH_COMPARATOR) {
 

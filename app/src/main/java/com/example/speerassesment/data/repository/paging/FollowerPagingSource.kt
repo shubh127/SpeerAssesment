@@ -1,4 +1,4 @@
-package com.example.speerassesment.data.repository
+package com.example.speerassesment.data.repository.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -7,8 +7,9 @@ import com.example.speerassesment.data.model.User
 import retrofit2.HttpException
 import java.io.IOException
 
-private const val START_PAGE_INDEX = 1
+//paging source to achieve paging while fetching followers list from server
 
+private const val START_PAGE_INDEX = 1
 
 class FollowerPagingSource(
     private val api: Api,

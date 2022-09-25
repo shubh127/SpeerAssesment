@@ -44,6 +44,7 @@ class SearchFragment : Fragment(), UserProfileClickListener {
     @SuppressLint("ClickableViewAccessibility")
     private fun configViews() {
 
+        //applying properties to recycler view and adapter
         binding.rvSearchedProfiles.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
@@ -61,15 +62,19 @@ class SearchFragment : Fragment(), UserProfileClickListener {
 
     private fun setUpListeners() {
 
+        //observing data from server
         viewModel.searchResponse.observe(viewLifecycleOwner) {
             mAdapter.submitData(lifecycle, it)
         }
 
+        //observing search box text change
         binding.svSearch.setOnQueryTextListener(object :
             android.widget.SearchView.OnQueryTextListener,
             SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(s: String): Boolean {
                 binding.rvSearchedProfiles.scrollToPosition(0)
+
+                //api call
                 viewModel.search(s)
                 binding.svSearch.clearFocus()
 
@@ -86,6 +91,7 @@ class SearchFragment : Fragment(), UserProfileClickListener {
             }
         })
 
+        //observing adapter load state to handle view's visibility
         mAdapter.addLoadStateListener { loadState ->
             binding.apply {
                 showProgress = loadState.source.refresh is LoadState.Loading
@@ -95,6 +101,7 @@ class SearchFragment : Fragment(), UserProfileClickListener {
         }
     }
 
+    //handled on click of item list
     override fun onProfileClick(userName: String) {
         val bundle = Bundle().apply {
             putString(SELECTED_USER_NAME, userName)

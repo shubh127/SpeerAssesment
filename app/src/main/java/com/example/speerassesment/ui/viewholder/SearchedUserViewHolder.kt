@@ -5,6 +5,7 @@ import com.example.speerassesment.data.model.User
 import com.example.speerassesment.databinding.ItemSearchedUserBinding
 import com.example.speerassesment.listener.UserProfileClickListener
 
+//view holder for user list to achieve recycling
 class SearchedUserViewHolder(
     private var binding: ItemSearchedUserBinding,
 ) : RecyclerView.ViewHolder(binding.root) {

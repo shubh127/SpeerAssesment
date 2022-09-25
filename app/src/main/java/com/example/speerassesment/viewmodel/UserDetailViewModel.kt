@@ -11,14 +11,17 @@ import javax.inject.Inject
 class UserDetailViewModel @Inject constructor(private val repository: UserRepository) :
     ViewModel() {
 
+    //api call
     fun getUserDetail(userName: String) {
         repository.getUserDetail(userName)
     }
 
+    //live data from repo
     fun getUserDetailData(): SingleLiveEvent<UserDetailResponse> {
         return repository.getUserDetailData()
     }
 
+    //api response via repo
     fun getIsDetailSuccessful(): SingleLiveEvent<Boolean> {
         return repository.getIsApiSuccessful()
     }

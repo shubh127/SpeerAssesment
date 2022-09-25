@@ -47,19 +47,24 @@ class UserDetailsFragment : Fragment(), ConnectionsClickListener {
 
         binding.itemClick = this
         binding.showProgress = true
+
+        //api call
         viewModel.getUserDetail(selectedUserName)
     }
 
     private fun setUpListeners() {
+        //observing api status
         viewModel.getIsDetailSuccessful().observe(viewLifecycleOwner) {
             binding.showProgress = false
         }
 
+        //observing data from api
         viewModel.getUserDetailData().observe(viewLifecycleOwner) {
             binding.userDetails = it
         }
     }
 
+    //handled on click of followers/followings
     override fun onConnectionsClick(isFollowingClicked: Boolean) {
         val bundle = Bundle().apply {
             putBoolean(IS_FOLLOWING, isFollowingClicked)

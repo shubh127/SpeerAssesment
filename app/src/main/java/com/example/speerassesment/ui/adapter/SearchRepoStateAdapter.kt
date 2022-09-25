@@ -7,7 +7,7 @@ import androidx.paging.LoadState
 import androidx.paging.LoadStateAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.speerassesment.databinding.SearchRepoLoadStateFooterBinding
-
+//adapter to handle header and footer in users list while paging
 class SearchRepoStateAdapter(private val retry: () -> Unit) :
     LoadStateAdapter<SearchRepoStateAdapter.LoadStateViewHolder>() {
 

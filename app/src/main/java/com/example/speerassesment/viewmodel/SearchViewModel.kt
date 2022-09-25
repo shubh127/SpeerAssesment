@@ -15,10 +15,12 @@ class SearchViewModel @Inject constructor(private val repository: UserRepository
     private val state: SavedStateHandle = SavedStateHandle()
     private val currentQuery = state.getLiveData(CURRENT_QUERY, "")
 
+    //api call
     val searchResponse = currentQuery.switchMap { queryString ->
         repository.searchUsers(queryString).cachedIn(viewModelScope)
     }
 
+    //data setter via view
     fun search(query: String) {
         currentQuery.value = query
     }

@@ -1,5 +1,7 @@
 package com.example.speerassesment.data.model
 
+//model to deserialize the detailed user information
+
 data class UserDetailResponse(
     val login: String,
     val id: Int,

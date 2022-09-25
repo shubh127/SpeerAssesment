@@ -52,13 +52,14 @@ class ConnectionListFragment : Fragment(), UserProfileClickListener {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun configViews() {
+        //handling toolbar title
         (requireActivity() as AppCompatActivity).supportActionBar?.title = if (isFollowing) {
             getString(R.string.following)
         } else {
             getString(R.string.followers)
         }
 
-
+        //setting recycler view and adapter properties
         binding.rvConnectionsList.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
@@ -73,14 +74,17 @@ class ConnectionListFragment : Fragment(), UserProfileClickListener {
             )
         }
 
+        //api call
         viewModel.getData(userName, isFollowing)
     }
 
     private fun setUpListeners() {
+        //observing live paging data
         viewModel.connectionsResponse.observe(viewLifecycleOwner) {
             mAdapter.submitData(lifecycle, it)
         }
 
+        //observing load state to handle visibility of views
         mAdapter.addLoadStateListener { loadState ->
             binding.apply {
                 showProgress = loadState.source.refresh is LoadState.Loading
@@ -90,6 +94,7 @@ class ConnectionListFragment : Fragment(), UserProfileClickListener {
         }
     }
 
+    //handled on click of item
     override fun onProfileClick(userName: String) {
         val bundle = Bundle().apply {
             putString(Constants.SELECTED_USER_NAME, userName)
