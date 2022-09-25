@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="showProgress"
+            type="Boolean" />
+
+        <variable
+            name="itemClick"
+            type="com.example.speerassesment.listener.ConnectionsClickListener" />
+
+        <variable
+            name="userDetails"
+            type="com.example.speerassesment.data.model.UserDetailResponse" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/civ_display_picture"
+            android:layout_width="@dimen/dp_120"
+            android:layout_height="@dimen/dp_120"
+            android:layout_marginTop="@dimen/dp_40"
+            app:civ_border_color="@color/purple_700"
+            app:civ_border_width="@dimen/dp_2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:loadImage='@{userDetails.avatar_url ??  ""}' />
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_10"
+            android:singleLine="true"
+            android:text="@{userDetails.name}"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_24"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/civ_display_picture"
+            tools:text="Name" />
+
+
+        <TextView
+            android:id="@+id/tv_company"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_4"
+            android:layout_marginTop="@dimen/dp_10"
+            android:text='@{userDetails.company != null ? "Company - "+ userDetails.company: "Company - NA"}'
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_name"
+            tools:text="Company - Speer tech" />
+
+        <TextView
+            android:id="@+id/tv_location"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_4"
+            android:layout_marginTop="@dimen/dp_10"
+            android:text='@{userDetails.location != null ? "Location - "+ userDetails.location: "Location - NA"}'
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_company"
+            tools:text="Location - Canada" />
+
+        <TextView
+            android:id="@+id/tv_email"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_4"
+            android:layout_marginTop="@dimen/dp_10"
+            android:text='@{userDetails.email != null? "Email - "+ userDetails.email: "Email - NA"}'
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_18"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_location"
+            tools:text="Email - a@b.com" />
+
+        <TextView
+            android:id="@+id/tv_bio"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/dp_4"
+            android:layout_marginTop="@dimen/dp_20"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:text='@{"Bio - " +userDetails.bio}'
+            android:textAlignment="center"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/sp_16"
+            android:textStyle="italic"
+            android:visibility='@{userDetails.bio != null ? View.VISIBLE : View.GONE}'
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_email"
+            tools:text="This is a demo bio" />
+
+        <TextView
+            android:id="@+id/tv_followers"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_20"
+            android:ellipsize="marquee"
+            android:onClick="@{() ->  itemClick.onConnectionsClick(false)}"
+            android:text='@{"Followers - " +userDetails.followers}'
+            android:textAlignment="center"
+            android:textColor="@color/purple_700"
+            android:textSize="@dimen/sp_20"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/tv_following"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_repos"
+            tools:text="Followers - 10" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_following"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:onClick="@{() ->  itemClick.onConnectionsClick(true)}"
+            android:text='@{"Following - " +userDetails.following}'
+            android:textAlignment="center"
+            android:textColor="@color/purple_700"
+            android:textSize="@dimen/sp_20"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_followers"
+            app:layout_constraintTop_toBottomOf="@id/tv_repos"
+            tools:text="Following - 10" />
+
+        <TextView
+            android:id="@+id/tv_repos"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:text='@{"Public Repos - " +userDetails.public_repos}'
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/sp_20"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_bio"
+            tools:text="Public Repos - 10" />
+
+        <View
+            android:id="@+id/view_translucent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.3"
+            android:background="@color/black" />
+
+        <ProgressBar
+            android:id="@+id/pb_loader"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/vg_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{showProgress ? View.VISIBLE : View.GONE}"
+            app:constraint_referenced_ids="view_translucent,pb_loader" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

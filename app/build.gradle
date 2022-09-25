@@ -1,0 +1,84 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id("dagger.hilt.android.plugin")
+}
+
+android {
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.example.speerassesment"
+        minSdk 21
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    viewBinding {
+        enabled = true
+    }
+    namespace 'com.example.speerassesment'
+}
+
+ext {
+    nav_version = '2.5.2'
+    lifecycle_viewmodel = '2.3.1'
+    lifecycle_livedata = '2.5.1'
+    gson = '2.8.9'
+    glide = '4.12.0'
+    glide_compiler = '4.11.0'
+    hilt_version = '2.38.1'
+    circle_image_view = '2.2.0'
+    retrofit = '2.3.0'
+    paging_version = "3.1.1"
+}
+
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_viewmodel"
+    implementation "com.google.code.gson:gson:$gson"
+    implementation "com.github.bumptech.glide:glide:$glide"
+    implementation 'androidx.paging:paging-common-ktx:3.1.1'
+    annotationProcessor "com.github.bumptech.glide:compiler:$glide_compiler"
+    implementation "com.google.dagger:hilt-android:$hilt_version"
+    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_livedata"
+    implementation "de.hdodenhof:circleimageview:$circle_image_view"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit"
+    implementation "androidx.paging:paging-runtime:$paging_version"
+}
+
+kapt {
+    correctErrorTypes true
+}
