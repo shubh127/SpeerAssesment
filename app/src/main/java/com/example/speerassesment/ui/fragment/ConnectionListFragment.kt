@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -75,6 +76,16 @@ class ConnectionListFragment : Fragment(), UserProfileClickListener {
         }
 
         //api call
+        activity?.let {
+            if (!Constants.isNetworkAvailable(it)) {
+                Toast.makeText(
+                    it,
+                    getString(R.string.network_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+        }
         viewModel.getData(userName, isFollowing)
     }
 
@@ -96,6 +107,17 @@ class ConnectionListFragment : Fragment(), UserProfileClickListener {
 
     //handled on click of item
     override fun onProfileClick(userName: String) {
+        activity?.let {
+            if (!Constants.isNetworkAvailable(it)) {
+                Toast.makeText(
+                    it,
+                    getString(R.string.network_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+        }
+
         val bundle = Bundle().apply {
             putString(Constants.SELECTED_USER_NAME, userName)
         }

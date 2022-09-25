@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import com.example.speerassesment.R
 import com.example.speerassesment.databinding.FragmentUserDetailsBinding
+import com.example.speerassesment.helper.Constants
 import com.example.speerassesment.helper.Constants.Companion.IS_FOLLOWING
 import com.example.speerassesment.helper.Constants.Companion.SELECTED_USER_NAME
 import com.example.speerassesment.listener.ConnectionsClickListener
@@ -49,6 +51,16 @@ class UserDetailsFragment : Fragment(), ConnectionsClickListener {
         binding.showProgress = true
 
         //api call
+        activity?.let {
+            if (!Constants.isNetworkAvailable(it)) {
+                Toast.makeText(
+                    it,
+                    getString(R.string.network_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+        }
         viewModel.getUserDetail(selectedUserName)
     }
 
@@ -66,6 +78,17 @@ class UserDetailsFragment : Fragment(), ConnectionsClickListener {
 
     //handled on click of followers/followings
     override fun onConnectionsClick(isFollowingClicked: Boolean) {
+        activity?.let {
+            if (!Constants.isNetworkAvailable(it)) {
+                Toast.makeText(
+                    it,
+                    getString(R.string.network_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+        }
+
         val bundle = Bundle().apply {
             putBoolean(IS_FOLLOWING, isFollowingClicked)
             putString(SELECTED_USER_NAME, selectedUserName)

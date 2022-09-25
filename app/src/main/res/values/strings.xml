@@ -10,4 +10,5 @@
     <string name="no_connections">You don\'t have connections in this section!!!</string>
     <string name="results_could_not_be_loaded">Results could not be loaded</string>
     <string name="retry">Retry</string>
+    <string name="network_error">Please connect to internet and try again!!!</string>
 </resources>

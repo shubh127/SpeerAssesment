@@ -10,8 +10,8 @@ android {
 
     defaultConfig {
         applicationId "com.example.speerassesment"
-        minSdk 21
-        targetSdk 31
+        minSdk 23
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 

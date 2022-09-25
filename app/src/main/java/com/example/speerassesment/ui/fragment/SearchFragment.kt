@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,7 +14,9 @@ import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.speerassesment.R
 import com.example.speerassesment.databinding.SearchFragmentBinding
+import com.example.speerassesment.helper.Constants
 import com.example.speerassesment.helper.Constants.Companion.SELECTED_USER_NAME
+import com.example.speerassesment.helper.Constants.Companion.isNetworkAvailable
 import com.example.speerassesment.listener.UserProfileClickListener
 import com.example.speerassesment.ui.adapter.SearchRepoStateAdapter
 import com.example.speerassesment.ui.adapter.SearchedUsersListAdapter
@@ -72,6 +75,16 @@ class SearchFragment : Fragment(), UserProfileClickListener {
             android.widget.SearchView.OnQueryTextListener,
             SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(s: String): Boolean {
+                activity?.let {
+                    if (!isNetworkAvailable(it)) {
+                        Toast.makeText(
+                            it,
+                            getString(R.string.network_error),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return false
+                    }
+                }
                 binding.rvSearchedProfiles.scrollToPosition(0)
 
                 //api call
@@ -103,6 +116,17 @@ class SearchFragment : Fragment(), UserProfileClickListener {
 
     //handled on click of item list
     override fun onProfileClick(userName: String) {
+        activity?.let {
+            if (!isNetworkAvailable(it)) {
+                Toast.makeText(
+                    it,
+                    getString(R.string.network_error),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+        }
+
         val bundle = Bundle().apply {
             putString(SELECTED_USER_NAME, userName)
         }
