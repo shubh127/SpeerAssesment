@@ -51,7 +51,7 @@ ext {
     glide_compiler = '4.11.0'
     hilt_version = '2.38.1'
     circle_image_view = '2.2.0'
-    retrofit = '2.3.0'
+    retrofit = '2.9.0'
     paging_version = "3.1.1"
 }
 
@@ -77,6 +77,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit"
     implementation "androidx.paging:paging-runtime:$paging_version"
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
 }
 
 kapt {

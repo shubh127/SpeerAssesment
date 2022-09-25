@@ -1,38 +1,39 @@
 package com.example.speerassesment.ui.adapter
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import com.example.speerassesment.data.model.User
 import com.example.speerassesment.databinding.ItemSearchedUserBinding
 import com.example.speerassesment.listener.UserProfileClickListener
 import com.example.speerassesment.ui.viewholder.SearchedUserViewHolder
 
 
-class SearchedUsersListAdapter(
-    private var userList: List<User>,
-    private val clickListener: UserProfileClickListener
-) : RecyclerView.Adapter<SearchedUserViewHolder>() {
+class SearchedUsersListAdapter(private val clickListener: UserProfileClickListener) :
+    PagingDataAdapter<User, SearchedUserViewHolder>(SEARCH_COMPARATOR) {
 
-    private lateinit var binding: ItemSearchedUserBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchedUserViewHolder {
-        binding =
+        val binding =
             ItemSearchedUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return SearchedUserViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: SearchedUserViewHolder, position: Int) {
-        val user = userList[position]
-        holder.bind(user, clickListener)
+        val search = getItem(position)
+        if (search != null) {
+            holder.bind(search, clickListener)
+        }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateData(data: List<User>) {
-        this.userList = data
-        notifyDataSetChanged()
-    }
+    companion object {
+        private val SEARCH_COMPARATOR = object : DiffUtil.ItemCallback<User>() {
+            override fun areItemsTheSame(oldItem: User, newItem: User) =
+                oldItem.id == newItem.id
 
-    override fun getItemCount(): Int = userList.size
+            override fun areContentsTheSame(oldItem: User, newItem: User) =
+                oldItem == newItem
+        }
+    }
 }

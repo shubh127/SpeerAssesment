@@ -1,19 +1,21 @@
 package com.example.speerassesment.ui.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.speerassesment.R
 import com.example.speerassesment.databinding.SearchFragmentBinding
 import com.example.speerassesment.helper.Constants.Companion.SELECTED_USER_NAME
 import com.example.speerassesment.listener.UserProfileClickListener
+import com.example.speerassesment.ui.adapter.SearchRepoStateAdapter
 import com.example.speerassesment.ui.adapter.SearchedUsersListAdapter
 import com.example.speerassesment.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +25,7 @@ class SearchFragment : Fragment(), UserProfileClickListener {
 
     private lateinit var binding: SearchFragmentBinding
     private val viewModel: SearchViewModel by viewModels()
-    private lateinit var mAdapter: SearchedUsersListAdapter
+    private var mAdapter = SearchedUsersListAdapter(this)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,42 +41,43 @@ class SearchFragment : Fragment(), UserProfileClickListener {
         setUpListeners()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun configViews() {
-        binding.showList = false
-        binding.showProgress = false
-        binding.errorMsg = getString(R.string.search_hint)
-
-        mAdapter = SearchedUsersListAdapter(mutableListOf(), this)
 
         binding.rvSearchedProfiles.apply {
-            adapter = mAdapter
+            setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
+            setOnTouchListener { _, motionEvent ->
+                binding.rvSearchedProfiles.onTouchEvent(motionEvent)
+                true
+            }
+
+            adapter = mAdapter.withLoadStateHeaderAndFooter(
+                header = SearchRepoStateAdapter { mAdapter.retry() },
+                footer = SearchRepoStateAdapter { mAdapter.retry() }
+            )
         }
     }
 
     private fun setUpListeners() {
-        viewModel.getIsSearchSuccessful().observe(viewLifecycleOwner) {
-            if (it) {
-                showHideItems(true)
-            } else {
-                showHideItems(false, getString(R.string.something_went_wrong))
-            }
-        }
 
-        viewModel.getUserProfilesList().observe(viewLifecycleOwner) {
-            if (it.isNullOrEmpty()) {
-                showHideItems(false, getString(R.string.no_user_profiles))
-            } else {
-                showHideItems(true)
-                mAdapter.updateData(it)
-            }
+        viewModel.searchResponse.observe(viewLifecycleOwner) {
+            mAdapter.submitData(lifecycle, it)
         }
 
         binding.svSearch.setOnQueryTextListener(object :
             android.widget.SearchView.OnQueryTextListener,
             SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(s: String): Boolean {
-                handleOnSearch(s)
+                binding.rvSearchedProfiles.scrollToPosition(0)
+                viewModel.search(s)
+                binding.svSearch.clearFocus()
+
+                if (s.isBlank()) {
+                    binding.tvErrorMsg.text = getString(R.string.search_hint)
+                } else {
+                    binding.tvErrorMsg.text = getString(R.string.something_went_wrong)
+                }
                 return false
             }
 
@@ -82,27 +85,14 @@ class SearchFragment : Fragment(), UserProfileClickListener {
                 return false
             }
         })
-    }
 
-    private fun handleOnSearch(input: String) {
-        if (input.length < 3) {
-            Toast.makeText(
-                context,
-                R.string.search_error_1,
-                Toast.LENGTH_SHORT
-            ).show()
-        } else {
-            binding.showProgress = true
-            binding.rvSearchedProfiles.scrollToPosition(0)
-            viewModel.searchUsers(input)
-            binding.svSearch.clearFocus()
+        mAdapter.addLoadStateListener { loadState ->
+            binding.apply {
+                showProgress = loadState.source.refresh is LoadState.Loading
+                showList = loadState.source.refresh is LoadState.NotLoading
+                showError = loadState.source.refresh is LoadState.Error
+            }
         }
-    }
-
-    private fun showHideItems(isShow: Boolean, msg: String = "") {
-        binding.errorMsg = msg
-        binding.showProgress = false
-        binding.showList = isShow
     }
 
     override fun onProfileClick(userName: String) {

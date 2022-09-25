@@ -6,9 +6,9 @@ import com.example.speerassesment.databinding.ItemSearchedUserBinding
 import com.example.speerassesment.listener.UserProfileClickListener
 
 class SearchedUserViewHolder(
-    private val binding: ItemSearchedUserBinding
+    private var binding: ItemSearchedUserBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(user: User, clickListener: UserProfileClickListener) {
+    fun bind(user: User, clickListener: UserProfileClickListener? = null) {
         binding.userData = user
         binding.itemClick = clickListener
     }

@@ -62,7 +62,7 @@ class ConnectionListFragment : Fragment(), UserProfileClickListener {
             } else {
                 showHideItems(true)
                 binding.rvConnectionsList.visibility = View.VISIBLE
-                mAdapter.updateData(it)
+//                mAdapter.updateData(it)
             }
         }
     }
@@ -73,7 +73,7 @@ class ConnectionListFragment : Fragment(), UserProfileClickListener {
         } else {
             getString(R.string.followers)
         }
-        mAdapter = SearchedUsersListAdapter(mutableListOf(), this)
+//        mAdapter = SearchedUsersListAdapter(mutableListOf(), this)
 
         binding.rvConnectionsList.apply {
             adapter = mAdapter

@@ -1,9 +1,11 @@
 package com.example.speerassesment.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.liveData
 import com.example.speerassesment.data.api.RetrofitClient
 import com.example.speerassesment.data.model.User
 import com.example.speerassesment.data.model.UserDetailResponse
-import com.example.speerassesment.data.model.UserResponse
 import com.example.speerassesment.helper.SingleLiveEvent
 import retrofit2.Call
 import retrofit2.Callback
@@ -16,25 +18,10 @@ class UserRepository @Inject constructor() {
     private val userDetailLiveData = SingleLiveEvent<UserDetailResponse>()
 
 
-    fun searchUsers(searchedText: String) {
-        RetrofitClient.apiInstance
-            .getUsers(searchedText)
-            .enqueue(object : Callback<UserResponse> {
-                override fun onResponse(
-                    call: Call<UserResponse>,
-                    response: Response<UserResponse>
-                ) {
-                    isApiSuccessful.postValue(response.isSuccessful)
-                    if (response.isSuccessful) {
-                        userListLiveData.postValue(response.body()?.items)
-                    }
-                }
-
-                override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                    isApiSuccessful.postValue(false)
-                }
-            })
-    }
+    fun searchUsers(query: String) = Pager(
+        config = PagingConfig(pageSize = 30, maxSize = 100, enablePlaceholders = false),
+        pagingSourceFactory = { SearchPagingSource(RetrofitClient.apiInstance, query) }
+    ).liveData
 
     fun getUserProfilesList(): SingleLiveEvent<ArrayList<User>> {
         return userListLiveData
