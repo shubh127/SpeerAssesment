@@ -1,9 +1,11 @@
 package com.example.speerassesment.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.example.speerassesment.data.model.User
+import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.example.speerassesment.data.repository.UserRepository
-import com.example.speerassesment.helper.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -11,16 +13,20 @@ import javax.inject.Inject
 class ConnectionListViewModel @Inject constructor(private val repository: UserRepository) :
     ViewModel() {
 
+    private val state: SavedStateHandle = SavedStateHandle()
+    private val userName = state.getLiveData(USERNAME, "")
+    private var isFollowing = false
 
-    fun getConnectionsListData(): SingleLiveEvent<ArrayList<User>> {
-        return repository.getUserProfilesList()
+    val connectionsResponse = userName.switchMap { queryString ->
+        repository.getConnectionList(queryString, isFollowing).cachedIn(viewModelScope)
     }
 
-    fun getIsApiSuccessful(): SingleLiveEvent<Boolean> {
-        return repository.getIsApiSuccessful()
+    fun getData(query: String, isFollowing: Boolean) {
+        userName.value = query
+        this.isFollowing = isFollowing
     }
 
-    fun getConnectionList(userName: String, isFollowing: Boolean) {
-        repository.getConnectionList(userName, isFollowing)
+    companion object {
+        private const val USERNAME = "username"
     }
 }

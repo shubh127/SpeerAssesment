@@ -12,8 +12,8 @@
             type="Boolean" />
 
         <variable
-            name="errorMsg"
-            type="String" />
+            name="showError"
+            type="Boolean" />
 
         <variable
             name="showList"
@@ -46,8 +46,8 @@
             android:layout_marginTop="@dimen/dp_10"
             android:gravity="center"
             android:paddingHorizontal="@dimen/dp_30"
-            android:text="@{errorMsg}"
-            android:visibility="@{showList ? View.GONE : View.VISIBLE}"
+            android:text="@string/something_went_wrong"
+            android:visibility="@{showError ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

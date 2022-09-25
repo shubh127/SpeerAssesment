@@ -1,7 +1,9 @@
 package com.example.speerassesment.data.repository
 
+import androidx.lifecycle.LiveData
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.liveData
 import com.example.speerassesment.data.api.RetrofitClient
 import com.example.speerassesment.data.model.User
@@ -23,9 +25,6 @@ class UserRepository @Inject constructor() {
         pagingSourceFactory = { SearchPagingSource(RetrofitClient.apiInstance, query) }
     ).liveData
 
-    fun getUserProfilesList(): SingleLiveEvent<ArrayList<User>> {
-        return userListLiveData
-    }
 
     fun getIsApiSuccessful(): SingleLiveEvent<Boolean> {
         return isApiSuccessful
@@ -55,51 +54,21 @@ class UserRepository @Inject constructor() {
         return userDetailLiveData
     }
 
-    fun getConnectionList(userName: String, following: Boolean) {
-        if (following) {
+    fun getConnectionList(userName: String, following: Boolean): LiveData<PagingData<User>> {
+        return if (following) {
             getFollowingList(userName)
         } else {
             getFollowerList(userName)
         }
     }
 
-    private fun getFollowerList(userName: String) {
-        RetrofitClient.apiInstance
-            .getFollowers(userName)
-            .enqueue(object : Callback<ArrayList<User>> {
-                override fun onResponse(
-                    call: Call<ArrayList<User>>,
-                    response: Response<ArrayList<User>>
-                ) {
-                    isApiSuccessful.postValue(response.isSuccessful)
-                    if (response.isSuccessful) {
-                        userListLiveData.postValue(response.body())
-                    }
-                }
+    private fun getFollowerList(query: String) = Pager(
+        config = PagingConfig(pageSize = 30, maxSize = 100, enablePlaceholders = false),
+        pagingSourceFactory = { FollowerPagingSource(RetrofitClient.apiInstance, query) }
+    ).liveData
 
-                override fun onFailure(call: Call<ArrayList<User>>, t: Throwable) {
-                    isApiSuccessful.postValue(false)
-                }
-            })
-    }
-
-    private fun getFollowingList(userName: String) {
-        RetrofitClient.apiInstance
-            .getFollowing(userName)
-            .enqueue(object : Callback<ArrayList<User>> {
-                override fun onResponse(
-                    call: Call<ArrayList<User>>,
-                    response: Response<ArrayList<User>>
-                ) {
-                    isApiSuccessful.postValue(response.isSuccessful)
-                    if (response.isSuccessful) {
-                        userListLiveData.postValue(response.body())
-                    }
-                }
-
-                override fun onFailure(call: Call<ArrayList<User>>, t: Throwable) {
-                    isApiSuccessful.postValue(false)
-                }
-            })
-    }
+    private fun getFollowingList(query: String) = Pager(
+        config = PagingConfig(pageSize = 30, maxSize = 100, enablePlaceholders = false),
+        pagingSourceFactory = { FollowingPageSource(RetrofitClient.apiInstance, query) }
+    ).liveData
 }

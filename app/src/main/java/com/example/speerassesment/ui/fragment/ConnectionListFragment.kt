@@ -1,5 +1,6 @@
 package com.example.speerassesment.ui.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.speerassesment.R
 import com.example.speerassesment.databinding.FragmentConnectionListBinding
 import com.example.speerassesment.helper.Constants
 import com.example.speerassesment.helper.Constants.Companion.IS_FOLLOWING
 import com.example.speerassesment.listener.UserProfileClickListener
+import com.example.speerassesment.ui.adapter.SearchRepoStateAdapter
 import com.example.speerassesment.ui.adapter.SearchedUsersListAdapter
 import com.example.speerassesment.viewmodel.ConnectionListViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +27,7 @@ class ConnectionListFragment : Fragment(), UserProfileClickListener {
     private val viewModel: ConnectionListViewModel by viewModels()
     private var userName: String = ""
     private var isFollowing: Boolean = false
-    private lateinit var mAdapter: SearchedUsersListAdapter
+    private var mAdapter = SearchedUsersListAdapter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,47 +50,44 @@ class ConnectionListFragment : Fragment(), UserProfileClickListener {
         setUpListeners()
     }
 
-    private fun setUpListeners() {
-        viewModel.getIsApiSuccessful().observe(viewLifecycleOwner) {
-            if (it) {
-                showHideItems(true)
-            } else {
-                showHideItems(false, getString(R.string.something_went_wrong))
-            }
-        }
-
-        viewModel.getConnectionsListData().observe(viewLifecycleOwner) {
-            if (it.isNullOrEmpty()) {
-                showHideItems(false, getString(R.string.no_connections))
-            } else {
-                showHideItems(true)
-                binding.rvConnectionsList.visibility = View.VISIBLE
-//                mAdapter.updateData(it)
-            }
-        }
-    }
-
+    @SuppressLint("ClickableViewAccessibility")
     private fun configViews() {
         (requireActivity() as AppCompatActivity).supportActionBar?.title = if (isFollowing) {
             getString(R.string.following)
         } else {
             getString(R.string.followers)
         }
-//        mAdapter = SearchedUsersListAdapter(mutableListOf(), this)
+
 
         binding.rvConnectionsList.apply {
-            adapter = mAdapter
+            setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context)
+            setOnTouchListener { _, motionEvent ->
+                binding.rvConnectionsList.onTouchEvent(motionEvent)
+                true
+            }
+
+            adapter = mAdapter.withLoadStateHeaderAndFooter(
+                header = SearchRepoStateAdapter { mAdapter.retry() },
+                footer = SearchRepoStateAdapter { mAdapter.retry() }
+            )
         }
 
-        binding.showProgress = true
-        viewModel.getConnectionList(userName, isFollowing)
+        viewModel.getData(userName, isFollowing)
     }
 
-    private fun showHideItems(isShow: Boolean, msg: String = "") {
-        binding.errorMsg = msg
-        binding.showProgress = false
-        binding.showList = isShow
+    private fun setUpListeners() {
+        viewModel.connectionsResponse.observe(viewLifecycleOwner) {
+            mAdapter.submitData(lifecycle, it)
+        }
+
+        mAdapter.addLoadStateListener { loadState ->
+            binding.apply {
+                showProgress = loadState.source.refresh is LoadState.Loading
+                showList = loadState.source.refresh is LoadState.NotLoading
+                showError = loadState.source.refresh is LoadState.Error
+            }
+        }
     }
 
     override fun onProfileClick(userName: String) {
